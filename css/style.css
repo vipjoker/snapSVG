@@ -1,0 +1,14 @@
+#paper{
+    background: #5affd1;
+    height: 500px;
+    z-index: -1;
+    width:100%;
+}
+
+svg{
+
+}
+body{
+    margin: 0;
+    padding: 0;
+}
