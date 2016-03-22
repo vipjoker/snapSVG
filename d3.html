@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="d3.js"></script>
+
+    <style>
+        p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+    <p>Hello world</p>
+
+</body>
+
+<script>
+    d3.selectAll('p').style('color', function(d, i) {
+        if (i % 2 == 0) return 'red';
+        else return 'green';
+    });
+
+
+
+    var data = [{
+        day: 'Monday',
+        total: 80
+    }, {
+        day: 'Tuesday',
+        total: 10
+    }, {
+        day: 'Wednesday',
+        total: 20
+    }, {
+        day: 'Thursday',
+        total: 25
+    }, {
+        day: 'Friday',
+        total: 40
+    }, {
+        day: 'Saturday',
+        total: 60
+    }, {
+        day: 'Sunday',
+        total: 75
+    }];
+
+
+    //    var x = d3.scale.linear().domain([0, 10]).range([50, 250]);
+    //    var y = d3.scale.linear().domain([0, 10]).range([50, 250]);
+    //
+    //    var axis = d3.svg.axis().scale(x).orient('bottom').ticks(10);
+    //
+    //
+    //    var svg = d3.select('body')
+    //        .append('svg')
+    //
+    //
+    //    svg.append('g')
+    //    .attr('class', 'x axis')
+    //    .call(axis);
+
+
+
+    var svg = d3
+        .select('body')
+        .append('svg')
+        .attr('width', 1000)
+        .attr('height', 500)
+        .style('background-color', 'rgb(41, 46, 50)');
+
+
+
+    var gradient = svg.append('defs')
+        .append('linearGradient')
+        .attr('id', 'grad1')
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '100%')
+        .attr('y2', '100%');
+
+
+    gradient.append('stop').attr('offset', '0%')
+        .style('stop-color', 'rgb(255,255,0)')
+        .style('stop-opacity', 1);
+
+    gradient.append('stop').attr('offset', '100%')
+        .style('stop-color', 'rgb(255,0,0)')
+        .style('stop-opacity', 1);
+
+
+
+
+
+
+
+    var scaleX = d3.scale
+        .linear()
+        .range([0, 300])
+        .domain([0, d3.max(data, function(d, i) {
+            return d.points
+        })]);
+
+
+    var scaleY = d3.scale.ordinal()
+        .rangeRoundBands([0, 300])
+        .domain(data.map(function(d, i) {
+            return d.user;
+        }));
+
+
+
+    function update(paramData) {
+        
+        
+        
+        var rects = svg.selectAll('rect')
+            .data(paramData, function(d, i) {
+                return d.user;
+            });
+        
+            
+        
+            rects.enter()
+                .append('rect');
+        
+            rects.transition()
+                .duration(500)
+            .attr('y', function(d, i) {
+                return scaleY(d.user) - 1;
+            })
+            .attr('x', 0)
+            .attr('width', function(d, i) {
+                return scaleX(d.points)
+            })
+            .attr('fill', '	#FFB400')
+            .attr('height', scaleY.rangeBand() - 1);
+    }
+
+
+    function deleteLast(paramData) {
+        //  data.pop();
+        svg.selectAll('rect')
+            .data(paramData, function(d, i) {
+                return d.user;
+            })
+            .exit()
+            .remove();
+    }
+
+
+
+
+    update(data);
+
+
+
+    function modifyDataArray(paramData, value) {
+        for (index in paramData) {
+            var randomResult = Math.round(Math.random());
+            if (randomResult) paramData[index].points += value;
+            else paramData[index].points -= value;
+        }
+        return paramData;
+    }
+
+
+
+
+    setInterval(function() {
+        data = modifyDataArray(data, 1);
+        // data.pop();
+        update(data);
+        console.log(JSON.stringify(data));
+
+    }, 2000);
+</script>
+
+
+
