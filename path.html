@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="d3.js"></script>
+
+    <style>
+        body {
+            font: 10px sans-serif;
+        }
+        text{
+            fill:#fff;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #fff;
+            shape-rendering: crispEdges;
+        }
+        .x.axis path {
+            display: none;
+        }
+        .line {
+            fill: none;
+            stroke:	#FFB400;
+            stroke-width: 1.5px;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+</body>
+
+<script>
+    var data = [{
+        day: 'Monday',
+        total: 80
+    }, {
+        day: 'Tuesday',
+        total: 10
+    }, {
+        day: 'Wednesday',
+        total: 20
+    }, {
+        day: 'Thursday',
+        total: 25
+    }, {
+        day: 'Friday',
+        total: 40
+    }, {
+        day: 'Saturday',
+        total: 60
+    }, {
+        day: 'Sunday',
+        total: 75
+    }];
+
+
+
+    var margin = {
+        top: 20,
+        right: 20,
+        bottom: 30,
+        left: 50
+    },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var formatDate = d3.time.format("%d-%b-%y");
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width])
+        .domain(data.map(function(d,i){
+            return d.day;
+        }));
+    
+    
+    d3.selectAll('div').style('background-color',"#e85959")
+    
+    
+    console.log("x for 10 = " +x('Monday'));
+    console.log("x for 20 = " +x('Tuesday'));
+    console.log("x for 30 = " +x('Sunday'));
+    var extendY  = d3.extent(data,function(d){return d.total});
+    console.log("Range y is " + extendY);
+    
+    var y = d3.scale.linear()
+            .range([0,height])
+            .domain(extendY);
+        
+   
+    
+    console.log("y for 10 = " +y(50));
+    console.log("y for 20 = " +y(10));
+    console.log("y for 30 = " +y(75));
+    
+    
+    
+    
+    
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var line = d3.svg.line()
+        .x(function(d) {
+            return x(d.day);
+        })
+        .y(function(d) {
+            return y(d.total);
+        });
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style('background-color','#1E2327')
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    
+    
+//    
+//    d3.tsv("data.tsv", type, function(error, data) {
+//        if (error) throw error;
+
+       
+     
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Price ($)");
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+   
+
+    function type(d) {
+        d.date = formatDate.parse(d.date);
+        d.close = +d.close;
+        return d;
+    }
+
+
+
+
+    function modifyDataArray(paramData, value) {
+        for (index in paramData) {
+            var randomResult = Math.round(Math.random());
+            if (randomResult) paramData[index].points += value;
+            else paramData[index].points -= value;
+        }
+        return paramData;
+    }
+
+    function startUpdate() {
+        setInterval(function() {
+            data = modifyDataArray(data, 1);
+            // data.pop();
+            update(data);
+            console.log(JSON.stringify(data));
+
+        }, 2000);
+
+
+    }
+</script>
+
+
+
